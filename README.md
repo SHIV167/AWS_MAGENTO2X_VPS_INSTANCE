@@ -132,14 +132,13 @@ docker-compose exec --user root php bash -lc "
 
 ## 11. Magento Setup & Post-Install
 ```bash
-docker-compose exec php bash -lc "
-  bin/magento setup:install \
-    --base-url=https://magento.shivjha.online/ \
-    --db-host=db --db-name=magento --db-user=magento --db-password=magentopass \
-    --search-engine=opensearch --elasticsearch-host=opensearch --elasticsearch-port=9200 \
-    --elasticsearch-index-prefix=magento \
-    --admin-firstname=Admin --admin-lastname=User --admin-email=admin@example.com \
-    --admin-user=admin --admin-password=Admin123! --backend-frontname=admin"
+docker-compose exec php bash -lc "bin/magento setup:install \
+  --base-url=https://magento.shivjha.online/ \
+  --db-host=db --db-name=magento --db-user=magento --db-password=magentopass \
+  --search-engine=opensearch --opensearch-host=opensearch --opensearch-port=9200 \
+  --opensearch-index-prefix=magento \
+  --admin-firstname=Admin --admin-lastname=User --admin-email=admin@example.com \
+  --admin-user=admin --admin-password=Admin123! --backend-frontname=admin"
 
 # Post-install tasks
 docker-compose exec php bash -lc "
