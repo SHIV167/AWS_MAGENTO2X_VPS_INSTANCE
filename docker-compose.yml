@@ -18,9 +18,9 @@ services:
       MYSQL_USER: magento
       MYSQL_PASSWORD: magentopass
       MYSQL_ROOT_HOST: '%'
-      MYSQL_INIT_COMMAND: "SET GLOBAL log_bin_trust_function_creators = 1;"
     volumes:
       - dbdata:/var/lib/mysql
+      - ./config/mysql.cnf:/etc/mysql/conf.d/custom.cnf
     ports:
       - "3306:3306"
 

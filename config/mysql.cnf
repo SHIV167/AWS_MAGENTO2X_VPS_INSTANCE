@@ -1,0 +1,4 @@
+[mysqld]
+log_bin_trust_function_creators=1
+super_read_only=0
+skip-log-bin
