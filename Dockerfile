@@ -11,10 +11,13 @@ RUN apt-get update \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 
+# Set PHP memory limit to 4G
+RUN echo "memory_limit = 4G" > /usr/local/etc/php/conf.d/memory-limit.ini
+
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php \
-    && chmod +x composer.phar \
-    && mv composer.phar /usr/local/bin/composer
+    && mv composer.phar /usr/local/bin/composer \
+    && chmod +x /usr/local/bin/composer
 
 # Create Composer config directory for www-data
 RUN mkdir -p /var/www/.composer \
