@@ -28,9 +28,10 @@ services:
     image: opensearchproject/opensearch:2.8.0
     environment:
       - discovery.type=single-node
-      - bootstrap.memory_lock=true
+      - bootstrap.memory_lock=false
       - plugins.security.disabled=true
-      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m
+      - "OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m -XX:+UseG1GC -XX:MaxGCPauseMillis=30 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent -Djava.awt.headless=true"
     ulimits:
       memlock:
         soft: -1
@@ -39,6 +40,12 @@ services:
       - "9200:9200"
     volumes:
       - opensearch-data:/usr/share/opensearch/data
+    healthcheck:
+      test: curl -f http://localhost:9200 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   nginx:
     image: nginx:1.23-alpine
