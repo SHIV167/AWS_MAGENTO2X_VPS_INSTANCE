@@ -1,0 +1,61 @@
+version: '3.7'
+services:
+  php:
+    build: .
+    volumes:
+      - ./src:/var/www/html
+      - ./auth.json:/root/.composer/auth.json:ro
+    depends_on:
+      - db
+      - opensearch
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: magento
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: magentopass
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  opensearch:
+    image: opensearchproject/opensearch:2.8.0
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - plugins.security.disabled=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+  nginx:
+    image: nginx:1.23-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html:ro
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
+
+volumes:
+  dbdata:
+  opensearch-data:
