@@ -80,11 +80,53 @@ src/vendor
 `config/nginx.conf`:
 ```nginx
 server {
-  listen 80;
-  server_name magento.shivjha.online www.magento.shivjha.online;
-  set $MAGE_ROOT /var/www/html;
-  set $MAGE_MODE developer; # change to production
-  include /var/www/html/nginx.conf.sample;
+    listen 80;
+    server_name magento.shivjha.online www.magento.shivjha.online;
+    set $MAGE_ROOT /var/www/html;
+    root $MAGE_ROOT/pub;
+    index index.php;
+
+    # Bypass versioned static files (strip version prefix)
+    location ~ ^/static/version\d*/ {
+        rewrite ^/static/(version\d*/)?(.*)$ /static/$2 last;
+    }
+
+    # Serve static assets directly
+    location /static/ {
+        alias $MAGE_ROOT/pub/static/;
+        expires max;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ /static.php?resource=$uri;
+    }
+
+    # Serve media files directly
+    location /media/ {
+        alias $MAGE_ROOT/pub/media/;
+        expires max;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ =404;
+    }
+
+    # Handle URL rewrites: fall back to index.php if file/dir not found
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    # PHP-FPM via FastCGI
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass fastcgi_backend;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+    }
+
+    # Deny access to sensitive hidden files
+    location ~* \.(htaccess|htpasswd)$ {
+        deny all;
+    }
 }
 ```
 
@@ -237,25 +279,36 @@ docker-compose exec php bin/magento deploy:mode:set production
 - Configure cron jobs for Magento
 - Add Varnish for full-page cache (see below)
 
-## 14. Varnish Configuration (Optional)
+## 14. Varnish Configuration
 Magento supports Varnish for full-page caching. To enable:
 
-1. Bring up the Varnish service:
+1. Ensure the Varnish service is running:
 ```bash
 docker-compose up -d varnish
 ```
 
-2. Configure Magento to use Varnish:
+2. Configure Magento to use Varnish (host: 127.0.0.1, port: 8080):
 ```bash
-docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/caching_application 2"
-docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/varnish/access_list 127.0.0.1"
-docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/varnish/backend_host varnish"
-docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/varnish/backend_port 80"
+docker-compose exec php bash -lc \"bin/magento config:set system/full_page_cache/caching_application 2\"
+docker-compose exec php bash -lc \"bin/magento config:set system/full_page_cache/varnish/access_list 127.0.0.1\"
+docker-compose exec php bash -lc \"bin/magento config:set system/full_page_cache/varnish/backend_host 127.0.0.1\"
+docker-compose exec php bash -lc \"bin/magento config:set system/full_page_cache/varnish/backend_port 8080\"
 ```
 
-3. Flush cache:
+3. (Optional) Export Magento-generated VCL to `config/default.vcl`:
 ```bash
-docker-compose exec php bash -lc "bin/magento cache:flush"
+docker-compose exec php bash -lc \"bin/magento varnish:vcl:export > config/default.vcl\"
+```
+
+4. Flush Magento cache:
+```bash
+docker-compose exec php bash -lc \"bin/magento cache:flush\"
+```
+
+5. Test Varnish caching:
+```bash
+curl -I http://localhost:6081/<path>   # → X-Cache: MISS
+curl -I http://localhost:6081/<path>   # → X-Cache: HIT
 ```
 
 ## 15. Install Sample Data (Optional)
