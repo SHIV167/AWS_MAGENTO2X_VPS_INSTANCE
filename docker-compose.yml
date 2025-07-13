@@ -47,13 +47,16 @@ services:
       retries: 3
       start_period: 30s
 
-  redis:
-    image: redis:6-alpine
+  varnish:
+    image: varnish:6-alpine
     restart: always
     ports:
-      - "6379:6379"
+      - "6081:80"
     volumes:
-      - redis_data:/data
+      - ./config/default.vcl:/etc/varnish/default.vcl:ro
+    depends_on:
+      - nginx
+    command: ["varnishd", "-F", "-a", "0.0.0.0:80", "-f", "/etc/varnish/default.vcl", "-s", "malloc,256m"]
 
   nginx:
     image: nginx:1.23-alpine
@@ -83,4 +86,4 @@ services:
 volumes:
   dbdata:
   opensearch-data:
-  redis_data:
+

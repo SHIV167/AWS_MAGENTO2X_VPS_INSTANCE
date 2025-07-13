@@ -235,76 +235,31 @@ Accessible at `http://<EC2_IP>:8081`:
 docker-compose exec php bin/magento deploy:mode:set production
 ```
 - Configure cron jobs for Magento
-- (Optional) Add Redis for session & page cache (see below)
+- Add Varnish for full-page cache (see below)
 
-## 14. Redis Configuration (Optional)
-Magento supports Redis for session storage, default cache, and full-page cache. To enable:
+## 14. Varnish Configuration (Optional)
+Magento supports Varnish for full-page caching. To enable:
 
-1. Ensure the `redis` service is running in Docker (already added to `docker-compose.yml`).
-
-Optional: if the PHP Redis extension (`phpredis`) is not installed in your container, install the Predis client via Composer:
+1. Bring up the Varnish service:
 ```bash
-docker-compose exec --user root php bash -lc "composer require predis/predis"
-
-docker-compose up -d redis
-
+docker-compose up -d varnish
 ```
 
-1.5. Fix pub/media and generated directories permissions:
+2. Configure Magento to use Varnish:
 ```bash
-# Ensure Redis CLI config can write to media and generated code
-docker-compose exec --user root php bash -lc "
-  cd /var/www/html &&
-  chown -R www-data:www-data pub/media generated &&
-  find pub/media generated -type d -exec chmod 775 {} \\; &&
-  find pub/media generated -type f -exec chmod 664 {} \\;
-"
+docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/caching_application 2"
+docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/varnish/access_list 127.0.0.1"
+docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/varnish/backend_host varnish"
+docker-compose exec php bash -lc "bin/magento config:set system/full_page_cache/varnish/backend_port 80"
 ```
 
-2. Configure Magento to use Redis via CLI:
+3. Flush cache:
 ```bash
-# Session storage
-docker-compose exec php bash -lc "bin/magento setup:config:set \
-  --session-save=redis \
-  --session-save-redis-host=redis \
-  --session-save-redis-port=6379 \
-  --session-save-redis-db=2" \
-
-# Default cache
-  docker-compose exec php bash -lc "bin/magento setup:config:set \
-  --cache-backend=redis \
-  --cache-backend-redis-server=redis \
-  --cache-backend-redis-port=6379 \
-  --cache-backend-redis-db=0" \
-
-# Page cache
-  docker-compose exec php bash -lc "bin/magento setup:config:set \
-  --page-cache=redis \
-  --page-cache-redis-server=redis \
-  --page-cache-redis-port=6379 \
-  --page-cache-redis-db=1"
+docker-compose exec php bash -lc "bin/magento cache:flush"
 ```
-
-3. Flush caches and deploy:
-```bash
-# Flush caches and recompile if necessary
-docker-compose exec php bash -lc "bin/magento cache:flush && \
-  bin/magento setup:di:compile && \
-  bin/magento setup:static-content:deploy -f"
-```
-
-(Note: adjust Redis DB indices as needed.)
 
 ## 15. Install Sample Data (Optional)
-- Harden Nginx headers (HSTS, X-Frame-Options, etc.)
-- Configure SMTP (e.g. Mageplaza SMTP)
-- (Optional) Install sample data
-- Backup (DB dumps, media) & monitoring
-- Regular security patches and updates
-
-## 14. Install Sample Data (Optional)
 Magento’s CLI can automatically register and install all sample-data modules:
-
 ```bash
 # 1. Ensure composer.json and vendor are writable/owned by www-data
 docker-compose exec --user root php bash -lc "
