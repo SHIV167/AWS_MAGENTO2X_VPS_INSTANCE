@@ -87,7 +87,8 @@ server {
 ## 7. Launch Containers
 
 ```bash
-docker-compose up -d
+sudo docker-compose up -d
+
 ```
 
 ## 8. Install Magento via Composer
@@ -184,9 +185,11 @@ Enjoy your Magento 2 setup! Feel free to open issues or request help.
    ```
    Enable & test:
    ```bash
+   sudo ln -s /etc/nginx/sites-available/magento.shivjha.online /etc/nginx/
    sudo ln -s /etc/nginx/sites-available/magento.shivjha.online /etc/nginx/sites-enabled/
-   sudo nginx -t
-   sudo systemctl reload nginx
+   sudo rm /etc/nginx/sites-enabled/default 
+   sudo nginx -t && sudo systemctl reload nginx
+   ls -l /etc/nginx/sites-enabled/
    ```
 
 5. Obtain SSL with Certbot

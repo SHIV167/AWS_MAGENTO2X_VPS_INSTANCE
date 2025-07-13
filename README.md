@@ -21,6 +21,7 @@ sudo usermod -aG docker $USER
 ```
 
 ## 2. Project Skeleton
+mkdir -p ~/magento2/{src,config} && cd ~/magento2
 ```text
 magento2/
 ├── auth.json            # repo.magento.com credentials
@@ -82,11 +83,14 @@ server {
      }
    }
    ```
-2. Enable & reload:
-```bash
-sudo ln -s /etc/nginx/sites-available/magento.shivjha.online /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-```
+2. Enable & test:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/magento.shivjha.online /etc/nginx/
+   sudo ln -s /etc/nginx/sites-available/magento.shivjha.online /etc/nginx/sites-enabled/
+   sudo rm /etc/nginx/sites-enabled/default 
+   sudo nginx -t && sudo systemctl reload nginx
+   ls -l /etc/nginx/sites-enabled/
+   ```
 3. Obtain SSL:
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
@@ -107,7 +111,8 @@ dig +short www.magento.shivjha.online
 
 ## 9. Build & Launch Containers
 ```bash
-docker-compose up -d --build
+sudo docker-compose up -d
+
 ```
 
 ## 10. Scaffold Magento & Permissions
