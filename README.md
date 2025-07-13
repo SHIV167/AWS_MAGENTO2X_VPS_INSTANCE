@@ -317,6 +317,10 @@ docker-compose exec php bash -lc "bin/magento deploy:mode:set production"
 
 # 5. (Optional) Run cron jobs to test scheduling
 docker-compose exec php bash -lc "bin/magento cron:run"
+
+# 6. Enable Web Server Rewrites (hide index.php)
+docker-compose exec php bash -lc "bin/magento config:set web/seo/use_rewrites 1"
+docker-compose exec php bash -lc "bin/magento cache:flush"
 ```
 
 ---

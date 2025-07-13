@@ -49,14 +49,13 @@ services:
 
   varnish:
     image: varnish:6
+    network_mode: host
     restart: always
-    ports:
-      - "6081:80"
     volumes:
       - ./config/default.vcl:/etc/varnish/default.vcl:ro
     depends_on:
       - nginx
-    command: ["varnishd", "-F", "-a", "0.0.0.0:80", "-f", "/etc/varnish/default.vcl", "-s", "malloc,256m"]
+    command: ["varnishd", "-F", "-a", "0.0.0.0:6081", "-f", "/etc/varnish/default.vcl", "-s", "malloc,256m"]
 
   nginx:
     image: nginx:1.23-alpine
@@ -86,4 +85,3 @@ services:
 volumes:
   dbdata:
   opensearch-data:
-
