@@ -111,9 +111,30 @@ dig +short www.magento.shivjha.online
 
 ## 9. Build & Launch Containers
 ```bash
+`````````````````````````````````````````````
+Add ubuntu to the docker group (so you can run docker without sudo):
+# Add ubuntu to docker group
+sudo usermod -aG docker ubuntu
+
+# Refresh your groups in this session
+newgrp docker
+
+# Verify you can now run docker
+docker ps
+docker-compose ps
+
+`````````````````````````````````````````
+Or simply prefix your Docker commands with sudo:
+sudo docker-compose down
+sudo docker-compose up -d --build
+
+````````````````````````````````
+
+
+``````````````
 sudo docker-compose up -d
 
-```
+``````````````
 
 ## 10. Scaffold Magento & Permissions
 1. Empty `src/` if re-running:
