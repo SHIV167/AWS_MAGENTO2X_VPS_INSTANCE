@@ -1,0 +1,14 @@
+{
+    "name": "shiv/ayurveda-theme",
+    "description": "Custom Shiv Ayurveda theme extending Luma",
+    "require": {
+        "php": "^8.1 || ^8.2"
+    },
+    "type": "magento2-theme",
+    "version": "1.0.0",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ]
+    }
+}

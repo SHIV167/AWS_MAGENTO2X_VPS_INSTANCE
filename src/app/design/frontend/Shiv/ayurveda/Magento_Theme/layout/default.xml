@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Promo Bar -->
+        <referenceContainer name="page.wrapper">
+            <container name="promo.bar.container" htmlTag="div" htmlClass="promo-bar-container" before="header.container">
+                <block class="Magento\Framework\View\Element\Template" name="promo.top" template="Magento_Theme::html/promo_top.phtml"/>
+            </container>
+        </referenceContainer>
+
+        <!-- Header -->
+        <referenceContainer name="header.container">
+            <container name="header-wrapper" htmlTag="div" htmlClass="header content">
+                <container name="header-inner" htmlTag="div" htmlClass="header-inner">
+                    <block class="Magento\Theme\Block\Html\Header\Logo" name="logo" before="-"/>
+                    <block class="Magento\Search\Block\Search" name="top.search" after="logo" template="Magento_Search::form.mini.phtml"/>
+                    <block class="Magento\Theme\Block\Html\Topmenu" name="catalog.topnav" template="Magento_Theme::html/topmenu.phtml"/>
+                    <block class="Magento\Customer\Block\Account\AuthorizationLink" name="authorization-link-login" before="minicart"/>
+                    <block class="Magento\Customer\Block\Account\RegisterLink" name="register-link" after="authorization-link-login"/>
+                    <block class="Magento\Checkout\Block\Cart\Sidebar" name="minicart" as="minicart" after="register-link"/>
+                </container>
+            </container>
+        </referenceContainer>
+
+        <!-- Footer -->
+        <referenceContainer name="footer-container">
+            <container name="footer-wrapper" htmlTag="div" htmlClass="footer content">
+                <block class="Magento\Framework\View\Element\Template" name="custom.footer" template="Magento_Theme::html/custom_footer.phtml"/>
+            </container>
+        </referenceContainer>
+    </body>
+</page>
