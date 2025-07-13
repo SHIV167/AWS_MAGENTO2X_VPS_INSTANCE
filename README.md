@@ -194,6 +194,15 @@ docker-compose exec --user root php bash -lc "
 "
 ```
 
+# If you see config.php not writable errors after upgrade, fix permissions:
+```bash
+docker-compose exec --user root php bash -lc "
+  chown -R www-data:www-data app/etc &&
+  find app/etc -type f -exec chmod 664 {} \\; &&
+  find app/etc -type d -exec chmod 775 {} \\;
+"
+```
+
 ## 11. Magento Setup & Post-Install
 ```bash
 docker-compose exec php bash -lc "bin/magento setup:install \
@@ -229,6 +238,34 @@ docker-compose exec php bin/magento deploy:mode:set production
 - (Optional) Install sample data
 - Backup (DB dumps, media) & monitoring
 - Regular security patches and updates
+
+## 14. Install Sample Data (Optional)
+Magento’s CLI can automatically register and install all sample-data modules:
+
+```bash
+# 1. Ensure composer.json and vendor are writable/owned by www-data
+docker-compose exec --user root php bash -lc "
+  cd /var/www/html &&
+  chown www-data:www-data composer.json composer.lock &&
+  chmod 664 composer.json composer.lock &&
+  chown -R www-data:www-data vendor &&
+  find vendor -type d -exec chmod 775 {} \\; &&
+  find vendor -type f -exec chmod 664 {} \\;
+"
+
+# 2. Register sample data modules (runs as www-data; falls back to root if needed)
+docker-compose exec php bash -lc "php bin/magento sampledata:deploy" \
+  || docker-compose exec --user root php bash -lc "php bin/magento sampledata:deploy"
+
+# 3. Update Composer dependencies & install sample-data packages
+docker-compose exec --user root php bash -lc "composer update"
+
+# 4. Upgrade schema/data, compile, deploy static content, and flush cache
+docker-compose exec php bash -lc "php bin/magento setup:upgrade && \
+  php bin/magento setup:di:compile && \
+  php bin/magento setup:static-content:deploy -f && \
+  php bin/magento cache:flush"
+```
 
 ---
 
