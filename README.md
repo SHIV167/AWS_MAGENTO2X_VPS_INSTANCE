@@ -311,6 +311,16 @@ curl -I http://localhost:6081/<path>   # → X-Cache: MISS
 curl -I http://localhost:6081/<path>   # → X-Cache: HIT
 ```
 
+6. Purge Varnish cache:
+
+```bash
+# Purge Magento full-page cache (issues Varnish PURGE calls)
+docker-compose exec php bash -lc "bin/magento cache:clean full_page"
+
+# Direct PURGE via curl (must originate from 127.0.0.1):
+curl -X PURGE http://127.0.0.1:6081/<path>
+```
+
 ## 15. Install Sample Data (Optional)
 Magento’s CLI can automatically register and install all sample-data modules:
 ```bash

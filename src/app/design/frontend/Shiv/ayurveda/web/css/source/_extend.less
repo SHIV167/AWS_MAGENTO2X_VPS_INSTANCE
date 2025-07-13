@@ -1,3 +1,8 @@
+/* Fixed header offset to match fixed header-wrapper height */
+body {
+  margin-top: 120px;
+}
+
 // Promo Bar
 .promo-bar-container {
   background: #333;
@@ -7,29 +12,78 @@
 }
 
 // Header Styles
-.header-inner {
+.header-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  padding: 10px 0;
+  z-index: 1000;
+}
+.header-row-1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
-  background: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
-.header-inner .logo {
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+}
+.header-left {
+  justify-content: flex-start;
+}
+.header-center {
   flex: 1;
+  text-align: center;
 }
-.header-inner .block.search {
-  margin: 0 20px;
+.header-right {
+  justify-content: flex-end;
 }
-.header-inner .block.top-nav {
-  flex: 2;
+.icon-nav button,
+.icon-search button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
 }
-.header-inner .authorization-link,
-.header-inner .register-link,
-.header-inner .minicart {
-  margin-left: 20px;
+.text-logo .logo-link {
+  text-decoration: none;
+}
+.text-logo .logo-main {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+.text-logo .logo-sub {
+  display: block;
+  font-size: 14px;
+  line-height: 1;
+}
+.header-row-2 {
+  background: #fff;
+  padding: 10px 0;
+}
+.header-row-2 nav {
+  display: inline-block;
+}
+.header-row-2 .ui-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.header-row-2 .ui-menu > li {
+  margin: 0 15px;
 }
 
-// Footer Styles
+
+
 .custom-footer {
   background: #000;
   color: #fff;
@@ -70,4 +124,19 @@
   margin-right: 10px;
   color: #fff;
   text-decoration: none;
+}
+
+// Full-width main footer background
+.page-footer.custom-footer-wrapper {
+  width: 100%;
+  background: #000;
+  margin: 0;
+  padding: 0;
+}
+
+// Center and constrain content inside footer
+.page-footer.custom-footer-wrapper .custom-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }

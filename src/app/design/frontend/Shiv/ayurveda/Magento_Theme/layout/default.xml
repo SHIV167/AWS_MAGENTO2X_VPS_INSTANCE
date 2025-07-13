@@ -2,6 +2,8 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <!-- Remove default welcome message and currency switcher -->
+        <referenceContainer name="header.panel" remove="true"/>
         <!-- Promo Bar -->
         <referenceContainer name="page.wrapper">
             <container name="promo.bar.container" htmlTag="div" htmlClass="promo-bar-container" before="header.container">
@@ -11,21 +13,33 @@
 
         <!-- Header -->
         <referenceContainer name="header.container">
-            <container name="header-wrapper" htmlTag="div" htmlClass="header content">
-                <container name="header-inner" htmlTag="div" htmlClass="header-inner">
-                    <block class="Magento\Theme\Block\Html\Header\Logo" name="logo" before="-"/>
-                    <block class="Magento\Search\Block\Search" name="top.search" after="logo" template="Magento_Search::form.mini.phtml"/>
+            <container name="header-wrapper" htmlTag="div" htmlClass="header-wrapper">
+                <container name="header-row-1" htmlTag="div" htmlClass="header-row-1">
+                    <container name="header-left" htmlTag="div" htmlClass="header-left">
+                        <block class="Magento\Framework\View\Element\Template" name="nav.toggle" template="Magento_Theme::html/icon_nav.phtml"/>
+                        <block class="Magento\Framework\View\Element\Template" name="search.icon" template="Magento_Theme::html/icon_search.phtml"/>
+                    </container>
+                    <container name="header-center" htmlTag="div" htmlClass="header-center">
+                        <block class="Magento\Theme\Block\Html\Header\Logo" name="logo" template="Magento_Theme::html/header/logo.phtml"/>
+                    </container>
+                    <container name="header-right" htmlTag="div" htmlClass="header-right">
+                        <block class="Magento\Customer\Block\Account\AuthorizationLink" name="authorization-link-login" template="Magento_Customer::account/link.phtml"/>
+                        <block class="Magento\Checkout\Block\Cart\Sidebar" name="minicart" template="Magento_Checkout::cart/minicart.phtml"/>
+                    </container>
+                </container>
+                <container name="header-row-2" htmlTag="div" htmlClass="header-row-2">
                     <block class="Magento\Theme\Block\Html\Topmenu" name="catalog.topnav" template="Magento_Theme::html/topmenu.phtml"/>
-                    <block class="Magento\Customer\Block\Account\AuthorizationLink" name="authorization-link-login" before="minicart"/>
-                    <block class="Magento\Customer\Block\Account\RegisterLink" name="register-link" after="authorization-link-login"/>
-                    <block class="Magento\Checkout\Block\Cart\Sidebar" name="minicart" as="minicart" after="register-link"/>
                 </container>
             </container>
         </referenceContainer>
 
         <!-- Footer -->
         <referenceContainer name="footer-container">
-            <container name="footer-wrapper" htmlTag="div" htmlClass="footer content">
+            <referenceBlock name="footer_links" remove="true"/>
+            <referenceBlock name="footer_links_additional" remove="true"/>
+            <referenceBlock name="form.subscribe" remove="true"/>
+            <referenceBlock name="copyright" remove="true"/>
+            <container name="footer-wrapper" htmlTag="footer" htmlClass="page-footer custom-footer-wrapper">
                 <block class="Magento\Framework\View\Element\Template" name="custom.footer" template="Magento_Theme::html/custom_footer.phtml"/>
             </container>
         </referenceContainer>
