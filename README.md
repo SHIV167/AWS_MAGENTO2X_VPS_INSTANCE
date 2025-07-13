@@ -67,6 +67,15 @@ Defines services:
 - **nginx**: container Nginx proxy (host→8080)
 - **phpmyadmin**: phpMyAdmin on port 8081
 
+**Tip:** To speed up Docker builds and avoid host-level permission errors, add a `.dockerignore` file in the project root with:
+```text
+src/var
+src/generated
+src/pub/static
+src/pub/media
+src/vendor
+```
+
 ## 6. Container Nginx vhost
 `config/nginx.conf`:
 ```nginx
@@ -91,6 +100,14 @@ server {
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Prevent "upstream sent too big header" errors by increasing proxy buffers
+        proxy_buffer_size           128k;
+        proxy_buffers               4 256k;
+        proxy_busy_buffers_size     256k;
+        proxy_read_timeout          300;
+        proxy_connect_timeout       300;
+        proxy_send_timeout          300;
      }
    }
    ```
@@ -167,6 +184,14 @@ docker-compose exec --user root php bash -lc "
   find var pub/static pub/media app/etc -type f -exec chmod 664 {} \; && \
   find var pub/static pub/media app/etc -type d -exec chmod 775 {} \; && \
   chmod u+x bin/magento"
+```
+
+# If you see cache or page_cache not writable errors after install, fix permissions:
+```bash
+docker-compose exec --user root php bash -lc "
+  chown -R www-data:www-data var &&
+  chmod -R 770 var
+"
 ```
 
 ## 11. Magento Setup & Post-Install
