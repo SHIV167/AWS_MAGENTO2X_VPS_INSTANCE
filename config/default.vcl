@@ -18,6 +18,17 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
+    # cache redirects for 60s
+    if (beresp.status == 301 || beresp.status == 302) {
+        unset beresp.http.Set-Cookie;
+        set beresp.uncacheable = false;
+        set beresp.ttl         = 60s;
+        return (deliver);
+    }
+    # remove PHPSESSID so redirects/pages can be cached
+    if (beresp.http.Set-Cookie ~ "PHPSESSID") {
+        unset beresp.http.Set-Cookie;
+    }
     if (beresp.ttl <= 0s || beresp.http.Set-Cookie) {
         set beresp.uncacheable = true;
     } else {
