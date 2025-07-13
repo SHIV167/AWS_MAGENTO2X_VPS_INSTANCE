@@ -242,6 +242,25 @@ Magento supports Redis for session storage, default cache, and full-page cache. 
 
 1. Ensure the `redis` service is running in Docker (already added to `docker-compose.yml`).
 
+Optional: if the PHP Redis extension (`phpredis`) is not installed in your container, install the Predis client via Composer:
+```bash
+docker-compose exec --user root php bash -lc "composer require predis/predis"
+
+docker-compose up -d redis
+
+```
+
+1.5. Fix pub/media and generated directories permissions:
+```bash
+# Ensure Redis CLI config can write to media and generated code
+docker-compose exec --user root php bash -lc "
+  cd /var/www/html &&
+  chown -R www-data:www-data pub/media generated &&
+  find pub/media generated -type d -exec chmod 775 {} \\; &&
+  find pub/media generated -type f -exec chmod 664 {} \\;
+"
+```
+
 2. Configure Magento to use Redis via CLI:
 ```bash
 # Session storage
@@ -260,9 +279,10 @@ docker-compose exec php bash -lc "bin/magento setup:config:set \
 
 # Page cache
   docker-compose exec php bash -lc "bin/magento setup:config:set \
-  --cache-page-redis-server=redis \
-  --cache-page-redis-port=6379 \
-  --cache-page-redis-db=1"
+  --page-cache=redis \
+  --page-cache-redis-server=redis \
+  --page-cache-redis-port=6379 \
+  --page-cache-redis-db=1"
 ```
 
 3. Flush caches and deploy:
@@ -308,6 +328,40 @@ docker-compose exec php bash -lc "php bin/magento setup:upgrade && \
   php bin/magento setup:di:compile && \
   php bin/magento setup:static-content:deploy -f && \
   php bin/magento cache:flush"
+```
+
+## Quick Setup CLI Commands (Docker CLI)
+
+Below is a consolidated list of Docker Compose commands to run Magento setup & maintenance tasks:
+
+```bash
+# 1. Fix ownership & permissions
+# Ensure var, vendor, config, and lock files are writable
+docker-compose exec --user root php bash -lc "cd /var/www/html && \
+  chown -R www-data:www-data var vendor composer.json composer.lock app/etc && \
+  chmod -R 770 var vendor && \
+  chmod 660 composer.json composer.lock app/etc"
+
+# 2. Initial Magento installation
+docker-compose exec php bash -lc "bin/magento setup:install \
+  --base-url=https://magento.shivjha.online/ \
+  --db-host=db --db-name=magento --db-user=magento --db-password=magentopass \
+  --search-engine=opensearch --opensearch-host=opensearch --opensearch-port=9200 \
+  --opensearch-index-prefix=magento \
+  --admin-firstname=Admin --admin-lastname=User --admin-email=admin@example.com \
+  --admin-user=admin --admin-password=Admin123! --backend-frontname=admin"
+
+# 3. Post-install: compile, static deploy, flush cache
+docker-compose exec php bash -lc "bin/magento setup:di:compile && \
+  bin/magento setup:static-content:deploy -f && \
+  bin/magento cache:flush"
+
+# 4. Reindex & switch to production mode
+docker-compose exec php bash -lc "bin/magento indexer:reindex"
+docker-compose exec php bash -lc "bin/magento deploy:mode:set production"
+
+# 5. (Optional) Run cron jobs to test scheduling
+docker-compose exec php bash -lc "bin/magento cron:run"
 ```
 
 ---
