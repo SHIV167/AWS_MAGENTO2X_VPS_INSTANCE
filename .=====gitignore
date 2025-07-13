@@ -1,0 +1,39 @@
+# Magento
+var/
+pub/media/
+pub/static/
+app/etc/env.php
+generated/
+vendor/
+composer.lock
+composer.phar
+
+# Docker
+.dockerignore
+.env
+.env.*
+.docker
+
+# Logs
+*.log
+*.log.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VCS
+.git
+.gitignore
+.gitattributes
+.gitmodules
+
+# Build
+*.tar.gz
+*.zip
