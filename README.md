@@ -16,8 +16,19 @@ sudo apt update
 sudo apt install -y docker.io docker-compose
 sudo systemctl enable --now docker
 # Add ubuntu to docker group
-sudo usermod -aG docker $USER
+# Add ubuntu to docker group
+sudo usermod -aG docker ubuntu
+
+# Refresh your groups in this session
+newgrp docker
+
+# Verify you can now run docker
+docker ps
+docker-compose ps
 # log out/in or `newgrp docker`
+
+sudo docker-compose down
+sudo docker-compose up -d --build
 ```
 
 ## 2. Project Skeleton
@@ -95,6 +106,8 @@ server {
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d magento.shivjha.online -d www.magento.shivjha.online
+
+
 ```
 
 ## 8. DNS
