@@ -47,6 +47,14 @@ services:
       retries: 3
       start_period: 30s
 
+  redis:
+    image: redis:6-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   nginx:
     image: nginx:1.23-alpine
     ports:
@@ -75,3 +83,4 @@ services:
 volumes:
   dbdata:
   opensearch-data:
+  redis_data:

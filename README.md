@@ -235,7 +235,47 @@ Accessible at `http://<EC2_IP>:8081`:
 docker-compose exec php bin/magento deploy:mode:set production
 ```
 - Configure cron jobs for Magento
-- (Optional) Add Redis for session & page cache
+- (Optional) Add Redis for session & page cache (see below)
+
+## 14. Redis Configuration (Optional)
+Magento supports Redis for session storage, default cache, and full-page cache. To enable:
+
+1. Ensure the `redis` service is running in Docker (already added to `docker-compose.yml`).
+
+2. Configure Magento to use Redis via CLI:
+```bash
+# Session storage
+docker-compose exec php bash -lc "bin/magento setup:config:set \
+  --session-save=redis \
+  --session-save-redis-host=redis \
+  --session-save-redis-port=6379 \
+  --session-save-redis-db=2" \
+
+# Default cache
+  docker-compose exec php bash -lc "bin/magento setup:config:set \
+  --cache-backend=redis \
+  --cache-backend-redis-server=redis \
+  --cache-backend-redis-port=6379 \
+  --cache-backend-redis-db=0" \
+
+# Page cache
+  docker-compose exec php bash -lc "bin/magento setup:config:set \
+  --cache-page-redis-server=redis \
+  --cache-page-redis-port=6379 \
+  --cache-page-redis-db=1"
+```
+
+3. Flush caches and deploy:
+```bash
+# Flush caches and recompile if necessary
+docker-compose exec php bash -lc "bin/magento cache:flush && \
+  bin/magento setup:di:compile && \
+  bin/magento setup:static-content:deploy -f"
+```
+
+(Note: adjust Redis DB indices as needed.)
+
+## 15. Install Sample Data (Optional)
 - Harden Nginx headers (HSTS, X-Frame-Options, etc.)
 - Configure SMTP (e.g. Mageplaza SMTP)
 - (Optional) Install sample data
