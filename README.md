@@ -188,9 +188,12 @@ docker-compose exec --user root php bash -lc "
 
 # If you see cache or page_cache not writable errors after install, fix permissions:
 ```bash
+# Ensure Magento var directory and subpaths are writable:
 docker-compose exec --user root php bash -lc "
+  cd /var/www/html &&
   chown -R www-data:www-data var &&
-  chmod -R 770 var
+  find var -type d -exec chmod 770 {} \\; &&
+  find var -type f -exec chmod 660 {} \\;
 "
 ```
 
