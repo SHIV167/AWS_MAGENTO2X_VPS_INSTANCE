@@ -5,10 +5,12 @@ body {
 
 // Promo Bar
 .promo-bar-container {
-  background: #333;
+  background: #555;
   color: #fff;
   text-align: center;
   padding: 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 // Header Styles
@@ -44,6 +46,16 @@ body {
 .header-right {
   justify-content: flex-end;
 }
+
+/* Header Icon Spacing */
+.header-left .icon-nav,
+.header-left .icon-search {
+  margin-right: 15px;
+}
+.header-right .icon-user,
+.header-right .minicart {
+  margin-left: 15px;
+}
 .icon-nav button,
 .icon-search button {
   background: none;
@@ -67,8 +79,10 @@ body {
 }
 .header-row-2 {
   background: #fff;
-  padding: 10px 0;
+  padding: 10px 20px; // vertical/horizontal padding
   text-align: center; // center menu container
+  max-width: 1200px;
+  margin: 0 auto;
 }
 .header-row-2 nav {
   display: inline-block;
@@ -79,6 +93,17 @@ body {
   margin: 0;
   padding: 0;
 }
+.header-row-2 .ui-menu > li {
+  margin: 0 20px; // increased spacing between menu items
+}
+
+// Promo bar text styling
+.promo-bar-container .promo-bar__text {
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 500;
+}
+
 .header-row-2 .ui-menu > li {
   margin: 0 20px; // increased spacing between menu items
 }
