@@ -1,0 +1,37 @@
+<?php
+/**
+ * Category Slider Template
+ *
+ * Displays products from a specified category in a slider format.
+ * Expects 'category_id' argument passed from layout.
+ */
+$categoryId = $block->getData('category_id');
+/** @var \Magento\Catalog\Model\CategoryFactory $categoryFactory */
+$categoryFactory = \Magento\Framework\App\ObjectManager::getInstance()
+    ->get(\Magento\Catalog\Model\CategoryFactory::class);
+/** @var \Magento\Catalog\Model\Category $category */
+$category = $categoryFactory->create()->load($categoryId);
+/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+$collection = $category->getProductCollection()
+    ->addAttributeToSelect(['name', 'price', 'small_image'])
+    ->addAttributeToFilter('status', 1)
+    ->setPageSize(8)
+    ->setCurPage(1);
+?>
+<?php if ($collection->getSize()): ?>
+<div class="home-category-slider">
+    <?php foreach ($collection as $product): ?>
+        <div class="slider-item">
+            <a href="<?= $product->getProductUrl(); ?>">
+                <img src="<?= $block->getImage($product, 'category_page_grid')->getImageUrl(); ?>" alt="<?= $block->escapeHtml($product->getName()); ?>" />
+                <div class="product-info">
+                    <h3><?= $block->escapeHtml($product->getName()); ?></h3>
+                    <span class="price"><?= $block->getPriceHtml($product); ?></span>
+                </div>
+            </a>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php else: ?>
+    <p><?php /* @escapeNotVerified */ echo __('No products found in this category.'); ?></p>
+<?php endif; ?>

@@ -65,7 +65,25 @@ docker-compose exec php bash -lc "bin/magento cache:flush"
 - **Footer**: `Magento_Theme/templates/html/custom_footer.phtml`
 - **Styles**: `web/css/source/_extend.less`
 
-## 5. Notes
+## 5. Homepage Override
+
+The theme overrides the default Magento homepage to include a backend-managed slider and a category carousel.
+
+1. **Create Slider Block**: In Admin → Content → Blocks, create a static block with identifier `homepage_slider`. Insert your slider markup (e.g., Owl/Slick HTML) into this block.
+
+2. **Layout Override**: The file `app/design/frontend/Shiv/ayurveda/Magento_Theme/layout/cms_index_index.xml` replaces the default CMS page and loads:
+   - `home.phtml` (`Magento_Theme/templates/html/home/home.phtml`)
+   - `category_slider.phtml` (`Magento_Catalog/templates/home/category_slider.phtml`)
+
+3. **Customize Category**: To change the product category displayed, update the `<argument name="category_id">` value in `cms_index_index.xml`.
+
+4. **Deploy**: Run static content deploy and clear caches:
+```bash
+docker-compose exec php bash -lc "bin/magento setup:static-content:deploy -f && bin/magento cache:clean"
+```
+
+
+## 6. Notes
 
 - If you add new static assets (images, fonts), place under `web/` and rerun static deploy.
 - To preview theme in Admin, upload `media/preview.png` and refresh Themes list.

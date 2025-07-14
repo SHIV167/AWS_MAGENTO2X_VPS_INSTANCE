@@ -1,0 +1,18 @@
+<?php
+/**
+ * Home Page Template
+ *
+ * Renders the static slider block and the category slider.
+ */
+?>
+<div class="home-page">
+    <!-- Static Slider Block -->
+    <div class="home-slider-container">
+        <?= $block->getChildHtml('home.slider'); ?>
+    </div>
+
+    <!-- Category Slider -->
+    <div class="home-category-slider-container">
+        <?= $block->getChildHtml('home.category.slider'); ?>
+    </div>
+</div>

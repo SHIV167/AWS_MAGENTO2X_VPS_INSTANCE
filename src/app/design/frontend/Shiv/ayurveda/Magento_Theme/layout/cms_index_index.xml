@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Override default homepage content -->
+        <referenceBlock name="cms_page" remove="true"/>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template" name="home.page" template="Magento_Theme::html/home/home.phtml">
+                <!-- Slider Static Block -->
+                <block class="Magento\Cms\Block\Block" name="home.slider">
+                    <arguments>
+                        <argument name="block_id" xsi:type="string">homepage_slider</argument>
+                    </arguments>
+                </block>
+
+                <!-- Category Slider: displays products from specified category -->
+                <block class="Magento\Framework\View\Element\Template" name="home.category.slider" template="Magento_Catalog::home/category_slider.phtml">
+                    <arguments>
+                        <!-- Replace '10' with your category ID -->
+                        <argument name="category_id" xsi:type="number">10</argument>
+                    </arguments>
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
