@@ -386,27 +386,6 @@ docker-compose exec php bash -lc "bin/magento config:set web/seo/use_rewrites 1"
 docker-compose exec php bash -lc "bin/magento cache:flush"
 ```
 
-## Frontend Workflow with Grunt
-
-Our theme uses Grunt to compile LESS and rebuild CSS on the fly.
-
-### Using Docker
-Start the Grunt watcher as a Docker service:
-```bash
-docker-compose up -d grunt
-```
-This runs `npm install` and then `grunt watch`, regenerating CSS on any changes to `.less`.
-
-### Using local npm
-Alternatively, run locally in your project root:
-```bash
-npm install
-npm run watch
-```
-
-Compiled CSS is written to:
-`src/app/design/frontend/Shiv/ayurveda/web/css/source/_extend.css`
-
 ---
 
 Enjoy your Magento 2 environment! If you hit any issues, consult logs (`docker-compose logs`, `/var/log/nginx`, `/var/log/letsencrypt`) or ask for help.
