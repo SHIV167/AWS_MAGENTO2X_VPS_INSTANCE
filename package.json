@@ -1,0 +1,16 @@
+{
+  "name": "aws-magento2x-vps-instance",
+  "version": "1.0.0",
+  "description": "Magento 2 Docker project with Shiv Ayurveda theme and Grunt frontend workflow",
+  "scripts": {
+    "build": "grunt",
+    "watch": "grunt watch"
+  },
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-contrib-less": "^3.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "load-grunt-tasks": "^5.1.0",
+    "time-grunt": "^2.1.0"
+  }
+}

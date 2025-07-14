@@ -82,6 +82,13 @@ services:
     ports:
       - "8081:80"
 
+  grunt:
+    image: node:18-alpine
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    command: sh -c "npm install && grunt watch"
+
 volumes:
   dbdata:
   opensearch-data:
